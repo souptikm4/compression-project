@@ -1,0 +1,1932 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusiGraph Studio v2.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header и навигация */
+        header {
+            background: rgba(17, 17, 17, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 2px solid #444;
+            color: #fff;
+            padding: 0.7rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .tab-btn:hover::before {
+            left: 100%;
+        }
+
+        .tab-btn:hover,
+        .tab-btn.active {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: #000;
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Основной контент */
+        main {
+            padding: 3rem 0;
+            min-height: calc(100vh - 100px);
+        }
+
+        .module {
+            display: none;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .module.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
+        }
+
+        .module-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .module-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .module-subtitle {
+            color: #aaa;
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        /* Карточки */
+        .card {
+            background: rgba(17, 17, 17, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid #333;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #4ecdc4;
+        }
+
+        /* Формы */
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ccc;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #444;
+            color: #fff;
+            font-family: inherit;
+            font-size: 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            box-shadow: 0 0 15px rgba(78, 205, 196, 0.3);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Слайдеры */
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            background: linear-gradient(90deg, #444, #4ecdc4);
+            outline: none;
+            border-radius: 3px;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .slider-value {
+            min-width: 80px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #4ecdc4;
+        }
+
+        /* Кнопки */
+        .btn {
+            background: transparent;
+            border: 2px solid #4ecdc4;
+            color: #4ecdc4;
+            padding: 1rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            margin-right: 1rem;
+            margin-bottom: 1rem;
+            font-family: inherit;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(78, 205, 196, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            background: #4ecdc4;
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: #000;
+            border-color: transparent;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        /* Цветовые селекторы */
+        .color-selector {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .color-option {
+            width: 60px;
+            height: 60px;
+            border: 3px solid #444;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .color-option::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .color-option:hover::before {
+            width: 40px;
+            height: 40px;
+        }
+
+        .color-option.selected {
+            border-color: #4ecdc4;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+        }
+
+        /* Canvas и визуализация */
+        .canvas-container {
+            background: rgba(34, 34, 34, 0.8);
+            border: 2px solid #444;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        canvas {
+            border: 2px solid #666;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        /* Результат модуль */
+        .result-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .result-preview {
+            text-align: center;
+        }
+
+        .result-preview h3 {
+            margin-bottom: 1rem;
+            color: #4ecdc4;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .audio-player {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .audio-player audio {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+        }
+
+        .final-result {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+            background: rgba(17, 17, 17, 0.8);
+            border-radius: 15px;
+            border: 2px solid #4ecdc4;
+        }
+
+        .share-options {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        /* Загрузка */
+        .loading {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid #444;
+            border-radius: 50%;
+            border-top-color: #4ecdc4;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Прогресс бар */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .tab-btn {
+                font-size: 0.75rem;
+                padding: 0.5rem 1rem;
+            }
+
+            .module-title {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                margin-right: 0;
+            }
+
+            .result-container {
+                grid-template-columns: 1fr;
+            }
+
+            .color-selector {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Анимации */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">MusiGraph Studio</div>
+                <nav class="nav-tabs">
+                    <button class="tab-btn active" data-tab="audio-creator">Audio Creator</button>
+                    <button class="tab-btn" data-tab="image-generator">Image Generator</button>
+                    <button class="tab-btn" data-tab="final-result">Final Result</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Модуль 1: Audio Creator -->
+            <div id="audio-creator" class="module active">
+                <div class="module-header">
+                    <h1 class="module-title">Audio Creator</h1>
+                    <p class="module-subtitle">Создайте уникальную мелодию из текста или звука</p>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Генерация аудио</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="audio-text">Введите текст для мелодии</label>
+                        <input type="text" id="audio-text" class="form-input" 
+                               placeholder="Ваша фраза станет мелодией..." maxlength="100">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Или загрузите аудио файл</label>
+                        <input type="file" id="audio-upload" accept=".wav,.mp3,.m4a" style="display: none;">
+                        <button id="upload-audio-btn" class="btn">Загрузить аудио</button>
+                        <span id="audio-filename" style="margin-left: 1rem; color: #4ecdc4;"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Темп: <span id="tempo-value">120</span> BPM</label>
+                        <div class="slider-container">
+                            <input type="range" id="tempo-slider" class="slider" 
+                                   min="60" max="180" step="10" value="120">
+                            <span class="slider-value" id="tempo-display">120</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Стиль мелодии</label>
+                        <div class="btn-group">
+                            <button class="btn btn-primary style-btn" data-style="ambient">Ambient</button>
+                            <button class="btn style-btn" data-style="electronic">Electronic</button>
+                            <button class="btn style-btn" data-style="organic">Organic</button>
+                            <button class="btn style-btn" data-style="rhythmic">Rhythmic</button>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button id="generate-audio" class="btn btn-primary">Создать мелодию</button>
+                        <button id="play-audio" class="btn" disabled>Воспроизвести</button>
+                        <button id="stop-audio" class="btn" disabled>Остановить</button>
+                        <button id="download-audio" class="btn" disabled>Скачать</button>
+                    </div>
+
+                    <div class="canvas-container" id="audio-visualizer" style="display: none;">
+                        <canvas id="audio-canvas" width="800" height="200"></canvas>
+                        <p>Визуализация аудио</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="audio-progress"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Модуль 2: Image Generator -->
+            <div id="image-generator" class="module">
+                <div class="module-header">
+                    <h1 class="module-title">Image Generator</h1>
+                    <p class="module-subtitle">Создайте уникальное изображение с помощью алгоритмов</p>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Создание изображения</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="image-description">Описание изображения</label>
+                        <textarea id="image-description" class="form-textarea" 
+                                placeholder="Опишите что вы хотите увидеть: абстрактные формы, природа, город, космос..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Выберите цветовую палитру (выберите 5 цветов)</label>
+                        <div class="color-selector" id="color-palette">
+                            <div class="color-option" style="background: #000000" data-color="#000000"></div>
+                            <div class="color-option" style="background: #ffffff" data-color="#ffffff"></div>
+                            <div class="color-option" style="background: #ff6b6b" data-color="#ff6b6b"></div>
+                            <div class="color-option" style="background: #4ecdc4" data-color="#4ecdc4"></div>
+                            <div class="color-option" style="background: #45b7d1" data-color="#45b7d1"></div>
+                            <div class="color-option" style="background: #96ceb4" data-color="#96ceb4"></div>
+                            <div class="color-option" style="background: #feca57" data-color="#feca57"></div>
+                            <div class="color-option" style="background: #ff9ff3" data-color="#ff9ff3"></div>
+                            <div class="color-option" style="background: #a29bfe" data-color="#a29bfe"></div>
+                            <div class="color-option" style="background: #fd79a8" data-color="#fd79a8"></div>
+                            <div class="color-option" style="background: #fdcb6e" data-color="#fdcb6e"></div>
+                            <div class="color-option" style="background: #6c5ce7" data-color="#6c5ce7"></div>
+                            <div class="color-option" style="background: #74b9ff" data-color="#74b9ff"></div>
+                            <div class="color-option" style="background: #55a3ff" data-color="#55a3ff"></div>
+                            <div class="color-option" style="background: #26de81" data-color="#26de81"></div>
+                        </div>
+                        <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem;">
+                            Выбрано цветов: <span id="selected-colors-count">0</span>/5
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Размер изображения</label>
+                        <div class="btn-group">
+                            <button class="btn btn-primary size-btn" data-size="512">512x512</button>
+                            <button class="btn size-btn" data-size="768">768x768</button>
+                            <button class="btn size-btn" data-size="1024">1024x1024</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Сложность: <span id="complexity-value">50</span>%</label>
+                        <div class="slider-container">
+                            <input type="range" id="complexity-slider" class="slider" 
+                                   min="10" max="100" step="10" value="50">
+                            <span class="slider-value" id="complexity-display">50%</span>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button id="generate-image" class="btn btn-primary">Создать изображение</button>
+                        <button id="regenerate-image" class="btn" disabled>Пересоздать</button>
+                        <button id="download-image" class="btn" disabled>Скачать PNG</button>
+                        <button id="download-svg" class="btn" disabled>Скачать SVG</button>
+                    </div>
+
+                    <div class="canvas-container" id="image-preview" style="display: none;">
+                        <canvas id="image-canvas" width="512" height="512"></canvas>
+                        <p>Сгенерированное изображение</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="image-progress"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Модуль 3: Final Result -->
+            <div id="final-result" class="module">
+                <div class="module-header">
+                    <h1 class="module-title">Final Result</h1>
+                    <p class="module-subtitle">Ваше уникальное аудио-визуальное произведение</p>
+                </div>
+
+                <div class="card">
+                    <div class="result-container">
+                        <div class="result-preview">
+                            <h3>Изображение</h3>
+                            <canvas id="final-image" width="400" height="400" style="border: 2px solid #4ecdc4; border-radius: 8px;"></canvas>
+                            <p id="image-info" style="margin-top: 1rem; color: #888; font-size: 0.9rem;">
+                                Изображение не создано
+                            </p>
+                        </div>
+                        
+                        <div class="result-preview">
+                            <h3>Аудио</h3>
+                            <div id="final-audio-container" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                                <canvas id="final-audio-viz" width="400" height="200" style="border: 2px solid #4ecdc4; border-radius: 8px;"></canvas>
+                                <div class="audio-player">
+                                    <audio id="final-audio" controls style="width: 100%;">
+                                        Ваш браузер не поддерживает аудио элемент.
+                                    </audio>
+                                </div>
+                            </div>
+                            <p id="audio-info" style="margin-top: 1rem; color: #888; font-size: 0.9rem;">
+                                Аудио не создано
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="final-result">
+                        <h3 style="margin-bottom: 1rem; font-size: 1.5rem;">Поделиться результатом</h3>
+                        <div class="share-options">
+                            <button id="download-combined" class="btn btn-primary" disabled>Скачать архив</button>
+                            <button id="share-link" class="btn" disabled>Получить ссылку</button>
+                            <button id="share-social" class="btn" disabled>Поделиться</button>
+                            <button id="export-project" class="btn" disabled>Экспорт проекта</button>
+                        </div>
+                        <div id="share-result" style="margin-top: 2rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; display: none;">
+                            <p style="margin-bottom: 1rem;">Ссылка для совместного использования:</p>
+                            <input type="text" id="share-url" class="form-input" readonly>
+                            <button id="copy-share-url" class="btn" style="margin-top: 1rem;">Копировать</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Глобальные переменные
+        let audioContext;
+        let currentAudio = null;
+        let currentImage = null;
+        let selectedColors = [];
+        let audioBuffer = null;
+        let isPlaying = false;
+        let currentStyle = 'ambient';
+        let currentSize = 512;
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                setupTabNavigation();
+                setupAudioCreator();
+                setupImageGenerator();
+                setupFinalResult();
+                console.log('MusiGraph Studio v2.0 загружен');
+            } catch (error) {
+                console.error('Ошибка инициализации:', error);
+            }
+        }
+
+        // === НАВИГАЦИЯ ПО ВКЛАДКАМ ===
+        function setupTabNavigation() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const modules = document.querySelectorAll('.module');
+
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetTab = btn.getAttribute('data-tab');
+                    
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    modules.forEach(m => m.classList.remove('active'));
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
+        }
+
+        // === AUDIO CREATOR ===
+        function setupAudioCreator() {
+            const textInput = document.getElementById('audio-text');
+            const uploadBtn = document.getElementById('upload-audio-btn');
+            const uploadInput = document.getElementById('audio-upload');
+            const tempoSlider = document.getElementById('tempo-slider');
+            const tempoDisplay = document.getElementById('tempo-display');
+            const styleBtns = document.querySelectorAll('.style-btn');
+            const generateBtn = document.getElementById('generate-audio');
+            const playBtn = document.getElementById('play-audio');
+            const stopBtn = document.getElementById('stop-audio');
+            const downloadBtn = document.getElementById('download-audio');
+
+         // Темп
+            tempoSlider.addEventListener('input', (e) => {
+                const value = e.target.value;
+                tempoDisplay.textContent = value;
+                document.getElementById('tempo-value').textContent = value;
+            });
+
+            // Загрузка аудио файла
+            uploadBtn.addEventListener('click', () => {
+                uploadInput.click();
+            });
+
+            uploadInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    document.getElementById('audio-filename').textContent = file.name;
+                    try {
+                        const arrayBuffer = await file.arrayBuffer();
+                        audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                        console.log('Аудио файл загружен:', file.name);
+                    } catch (error) {
+                        console.error('Ошибка загрузки аудио:', error);
+                        alert('Ошибка загрузки аудио файла');
+                    }
+                }
+            });
+
+            // Выбор стиля
+            styleBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    styleBtns.forEach(b => b.classList.remove('btn-primary'));
+                    btn.classList.add('btn-primary');
+                    currentStyle = btn.getAttribute('data-style');
+                });
+            });
+
+            // Генерация аудио
+            generateBtn.addEventListener('click', async () => {
+                const text = textInput.value.trim();
+                if (!text && !audioBuffer) {
+                    alert('Введите текст или загрузите аудио файл');
+                    return;
+                }
+
+                generateBtn.disabled = true;
+                generateBtn.innerHTML = '<span class="loading"></span> Создание...';
+
+                try {
+                    await generateAudio(text);
+                    playBtn.disabled = false;
+                    stopBtn.disabled = false;
+                    downloadBtn.disabled = false;
+                    showAudioVisualizer();
+                } catch (error) {
+                    console.error('Ошибка генерации аудио:', error);
+                    alert('Ошибка создания аудио');
+                } finally {
+                    generateBtn.disabled = false;
+                    generateBtn.textContent = 'Создать мелодию';
+                }
+            });
+
+            // Воспроизведение
+            playBtn.addEventListener('click', playAudio);
+            stopBtn.addEventListener('click', stopAudio);
+            downloadBtn.addEventListener('click', downloadAudio);
+        }
+
+        async function generateAudio(text) {
+            return new Promise((resolve) => {
+                const canvas = document.getElementById('audio-canvas');
+                const ctx = canvas.getContext('2d');
+                const progressBar = document.getElementById('audio-progress');
+                
+                // Создание синтетического аудио на основе текста
+                const sampleRate = 44100;
+                const duration = Math.max(3, Math.min(text.length * 0.1, 10)); // 3-10 секунд
+                const tempo = parseInt(document.getElementById('tempo-slider').value);
+                
+                // Создание аудио буфера
+                const buffer = audioContext.createBuffer(2, sampleRate * duration, sampleRate);
+                const leftChannel = buffer.getChannelData(0);
+                const rightChannel = buffer.getChannelData(1);
+
+                // Генерация звука на основе текста и стиля
+                for (let i = 0; i < buffer.length; i++) {
+                    const t = i / sampleRate;
+                    let sample = 0;
+
+                    // Разные алгоритмы для разных стилей
+                    switch (currentStyle) {
+                        case 'ambient':
+                            sample = generateAmbientSound(t, text, tempo);
+                            break;
+                        case 'electronic':
+                            sample = generateElectronicSound(t, text, tempo);
+                            break;
+                        case 'organic':
+                            sample = generateOrganicSound(t, text, tempo);
+                            break;
+                        case 'rhythmic':
+                            sample = generateRhythmicSound(t, text, tempo);
+                            break;
+                    }
+
+                    leftChannel[i] = sample * 0.3;
+                    rightChannel[i] = sample * 0.3;
+
+                    // Обновление прогресса
+                    if (i % 1000 === 0) {
+                        const progress = (i / buffer.length) * 100;
+                        progressBar.style.width = progress + '%';
+                    }
+                }
+
+                currentAudio = buffer;
+                updateAudioVisualization(buffer);
+                progressBar.style.width = '100%';
+                
+                setTimeout(() => {
+                    progressBar.style.width = '0%';
+                    resolve();
+                }, 500);
+            });
+          
+        }
+
+        function generateAmbientSound(time, text, tempo) {
+            const charCode = text.charCodeAt(Math.floor(time * 2) % text.length) || 65;
+            const freq = 200 + (charCode * 2);
+            const lfo = Math.sin(time * 0.5) * 0.3;
+            return Math.sin(2 * Math.PI * freq * time + lfo) * Math.exp(-time * 0.1);
+        }
+
+        function generateElectronicSound(time, text, tempo) {
+            const charCode = text.charCodeAt(Math.floor(time * 4) % text.length) || 65;
+            const freq = 300 + (charCode * 3);
+            const saw = (time * freq) % 1 - 0.5;
+            const filter = Math.sin(time * 2) * 0.5 + 0.5;
+            return saw * filter * 0.5;
+        }
+
+        function generateOrganicSound(time, text, tempo) {
+            const charCode = text.charCodeAt(Math.floor(time * 1.5) % text.length) || 65;
+            const freq = 150 + (charCode * 1.5);
+            const harmonics = Math.sin(2 * Math.PI * freq * time) * 0.5 +
+                            Math.sin(2 * Math.PI * freq * 2 * time) * 0.25 +
+                            Math.sin(2 * Math.PI * freq * 3 * time) * 0.125;
+            return harmonics * Math.sin(time * 0.8);
+        }
+
+        function generateRhythmicSound(time, text, tempo) {
+            const beatInterval = 60 / tempo;
+            const beatPhase = (time % beatInterval) / beatInterval;
+            const charCode = text.charCodeAt(Math.floor(time / beatInterval) % text.length) || 65;
+            const freq = 100 + (charCode * 2);
+            
+            let envelope = 1;
+            if (beatPhase < 0.1) {
+                envelope = beatPhase * 10;
+            } else if (beatPhase > 0.8) {
+                envelope = (1 - beatPhase) * 5;
+            }
+            
+            return Math.sin(2 * Math.PI * freq * time) * envelope * 0.6;
+        }
+
+      
+
+        function showAudioVisualizer() {
+            document.getElementById('audio-visualizer').style.display = 'block';
+        }
+
+        function playAudio() {
+            if (!currentAudio || isPlaying) return;
+            
+            const source = audioContext.createBufferSource();
+            source.buffer = currentAudio;
+            source.connect(audioContext.destination);
+            source.start();
+            
+            isPlaying = true;
+            playBtn.disabled = true;
+            
+            source.onended = () => {
+                isPlaying = false;
+                playBtn.disabled = false;
+            };
+        }
+
+        function stopAudio() {
+            if (audioContext) {
+                audioContext.close().then(() => {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    isPlaying = false;
+                    playBtn.disabled = false;
+                });
+            }
+        }
+
+        function downloadAudio() {
+            if (!currentAudio) return;
+            
+            const offlineContext = new OfflineAudioContext(2, currentAudio.length, currentAudio.sampleRate);
+            const source = offlineContext.createBufferSource();
+            source.buffer = currentAudio;
+            source.connect(offlineContext.destination);
+            source.start();
+            
+            offlineContext.startRendering().then(renderedBuffer => {
+                const wav = bufferToWav(renderedBuffer);
+                const blob = new Blob([wav], { type: 'audio/wav' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'musigraph-audio.wav';
+                a.click();
+                
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        function bufferToWav(buffer) {
+            const length = buffer.length;
+            const numberOfChannels = buffer.numberOfChannels;
+            const sampleRate = buffer.sampleRate;
+            const arrayBuffer = new ArrayBuffer(44 + length * numberOfChannels * 2);
+            const view = new DataView(arrayBuffer);
+            
+            // WAV заголовок
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+            
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + length * numberOfChannels * 2, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, numberOfChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * numberOfChannels * 2, true);
+            view.setUint16(32, numberOfChannels * 2, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, length * numberOfChannels * 2, true);
+            
+            // Запись аудио данных
+            let offset = 44;
+            for (let i = 0; i < length; i++) {
+                for (let channel = 0; channel < numberOfChannels; channel++) {
+                    const sample = Math.max(-1, Math.min(1, buffer.getChannelData(channel)[i]));
+                    view.setInt16(offset, sample * 0x7FFF, true);
+                    offset += 2;
+                }
+            }
+            
+            return arrayBuffer;
+        }
+
+        // === IMAGE GENERATOR ===
+        function setupImageGenerator() {
+            const descriptionInput = document.getElementById('image-description');
+            const colorOptions = document.querySelectorAll('.color-option');
+            const sizeButtons = document.querySelectorAll('.size-btn');
+            const complexitySlider = document.getElementById('complexity-slider');
+            const complexityDisplay = document.getElementById('complexity-display');
+            const generateBtn = document.getElementById('generate-image');
+            const regenerateBtn = document.getElementById('regenerate-image');
+            const downloadPngBtn = document.getElementById('download-image');
+            const downloadSvgBtn = document.getElementById('download-svg');
+
+            // Слайдер сложности
+            complexitySlider.addEventListener('input', (e) => {
+                const value = e.target.value;
+                complexityDisplay.textContent = value + '%';
+                document.getElementById('complexity-value').textContent = value;
+            });
+
+            // Выбор цветов
+            colorOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const color = option.getAttribute('data-color');
+                    
+                    if (option.classList.contains('selected')) {
+                        option.classList.remove('selected');
+                        selectedColors = selectedColors.filter(c => c !== color);
+                    } else if (selectedColors.length < 5) {
+                        option.classList.add('selected');
+                        selectedColors.push(color);
+                    } else {
+                        alert('Можно выбрать максимум 5 цветов');
+                    }
+                    
+                    document.getElementById('selected-colors-count').textContent = selectedColors.length;
+                });
+            });
+
+            // Выбор размера
+            sizeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    sizeButtons.forEach(b => b.classList.remove('btn-primary'));
+                    btn.classList.add('btn-primary');
+                    currentSize = parseInt(btn.getAttribute('data-size'));
+                });
+            });
+
+            // Генерация изображения
+            generateBtn.addEventListener('click', async () => {
+                const description = descriptionInput.value.trim();
+                if (!description) {
+                    alert('Введите описание изображения');
+                    return;
+                }
+                
+                if (selectedColors.length === 0) {
+                    alert('Выберите хотя бы один цвет');
+                    return;
+                }
+
+                generateBtn.disabled = true;
+                generateBtn.innerHTML = '<span class="loading"></span> Создание...';
+
+                try {
+                    await generateImage(description);
+                    regenerateBtn.disabled = false;
+                    downloadPngBtn.disabled = false;
+                    downloadSvgBtn.disabled = false;
+                    showImagePreview();
+                } catch (error) {
+                    console.error('Ошибка генерации изображения:', error);
+                    alert('Ошибка создания изображения');
+                } finally {
+                    generateBtn.disabled = false;
+                    generateBtn.textContent = 'Создать изображение';
+                }
+            });
+
+            // Пересоздание
+            regenerateBtn.addEventListener('click', async () => {
+                const description = descriptionInput.value.trim();
+                regenerateBtn.disabled = true;
+                regenerateBtn.innerHTML = '<span class="loading"></span> Пересоздание...';
+                
+                try {
+                    await generateImage(description, true);
+                } catch (error) {
+                    console.error('Ошибка пересоздания:', error);
+                } finally {
+                    regenerateBtn.disabled = false;
+                    regenerateBtn.textContent = 'Пересоздать';
+                }
+            });
+
+            // Скачивание
+            downloadPngBtn.addEventListener('click', downloadImagePng);
+            downloadSvgBtn.addEventListener('click', downloadImageSvg);
+        }
+
+        async function generateImage(description, regenerate = false) {
+            return new Promise((resolve) => {
+                const canvas = document.getElementById('image-canvas');
+                const ctx = canvas.getContext('2d');
+                const progressBar = document.getElementById('image-progress');
+                
+                // Установка размера canvas
+                canvas.width = currentSize;
+                canvas.height = currentSize;
+                
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                const complexity = parseInt(document.getElementById('complexity-slider').value);
+                const numShapes = Math.floor((complexity / 100) * 200) + 50;
+                
+                // Генерация на основе описания
+                const seed = regenerate ? Math.random() : stringToSeed(description);
+                const rng = createSeededRandom(seed);
+                
+                for (let i = 0; i < numShapes; i++) {
+                    const progress = (i / numShapes) * 100;
+                    progressBar.style.width = progress + '%';
+                    
+                    setTimeout(() => {
+                        drawGenerativeShape(ctx, rng, canvas.width, canvas.height);
+                        
+                        if (i === numShapes - 1) {
+                            currentImage = canvas.toDataURL();
+                            progressBar.style.width = '100%';
+                            setTimeout(() => {
+                                progressBar.style.width = '0%';
+                                resolve();
+                            }, 300);
+                        }
+                    }, i * 2);
+                }
+            });
+        }
+
+        function stringToSeed(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash);
+        }
+
+        function createSeededRandom(seed) {
+            return function() {
+                seed = (seed * 9301 + 49297) % 233280;
+                return seed / 233280;
+            };
+        }
+
+        function drawGenerativeShape(ctx, rng, width, height) {
+            const shapeType = Math.floor(rng() * 5);
+            const color = selectedColors[Math.floor(rng() * selectedColors.length)];
+            const alpha = 0.1 + rng() * 0.4;
+            
+            ctx.fillStyle = color + Math.floor(alpha * 255).toString(16).padStart(2, '0');
+            ctx.strokeStyle = color + Math.floor(alpha * 255).toString(16).padStart(2, '0');
+            ctx.lineWidth = 1 + rng() * 3;
+            
+            const x = rng() * width;
+            const y = rng() * height;
+            const size = 10 + rng() * 100;
+            
+            switch (shapeType) {
+                case 0: // Круг
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, Math.PI * 2);
+                    ctx.fill();
+                    break;
+                    
+                case 1: // Прямоугольник
+                    ctx.fillRect(x, y, size, size * (0.5 + rng() * 0.5));
+                    break;
+                    
+                case 2: // Треугольник
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(x + size, y + size);
+                    ctx.lineTo(x - size * 0.5, y + size);
+                    ctx.closePath();
+                    ctx.fill();
+                    break;
+                    
+                case 3: // Линия
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(x + (rng() - 0.5) * size * 2, y + (rng() - 0.5) * size * 2);
+                    ctx.stroke();
+                    break;
+                    
+                case 4: // Сложная фигура
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    for (let i = 0; i < 5; i++) {
+                        const px = x + (rng() - 0.5) * size;
+                        const py = y + (rng() - 0.5) * size;
+                        ctx.lineTo(px, py);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+                    break;
+            }
+        }
+
+        function showImagePreview() {
+            document.getElementById('image-preview').style.display = 'block';
+        }
+
+        function downloadImagePng() {
+            if (!currentImage) return;
+            
+            const a = document.createElement('a');
+            a.href = currentImage;
+            a.download = 'musigraph-image.png';
+            a.click();
+        }
+
+        function downloadImageSvg() {
+            // Создание SVG версии изображения
+            const canvas = document.getElementById('image-canvas');
+            const svg = `
+                <svg width="${canvas.width}" height="${canvas.height}" xmlns="http://www.w3.org/2000/svg">
+                    <image width="100%" height="100%" href="${currentImage}"/>
+                </svg>
+            `;
+            
+            const blob = new Blob([svg], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'musigraph-image.svg';
+            a.click();
+            
+            URL.revokeObjectURL(url);
+        }
+
+        // === FINAL RESULT ===
+        function setupFinalResult() {
+            const downloadCombinedBtn = document.getElementById('download-combined');
+            const shareLinkBtn = document.getElementById('share-link');
+            const shareSocialBtn = document.getElementById('share-social');
+            const exportProjectBtn = document.getElementById('export-project');
+            const copyUrlBtn = document.getElementById('copy-share-url');
+
+            downloadCombinedBtn.addEventListener('click', downloadCombined);
+            shareLinkBtn.addEventListener('click', generateShareLink);
+            shareSocialBtn.addEventListener('click', shareToSocial);
+            exportProjectBtn.addEventListener('click', exportProject);
+            copyUrlBtn.addEventListener('click', copyShareUrl);
+
+            // Обновление результата при переходе на вкладку
+            const finalTab = document.querySelector('[data-tab="final-result"]');
+            finalTab.addEventListener('click', updateFinalResult);
+        }
+
+        function updateFinalResult() {
+            const finalImageCanvas = document.getElementById('final-image');
+            const finalAudioViz = document.getElementById('final-audio-viz');
+            const finalAudio = document.getElementById('final-audio');
+            const imageInfo = document.getElementById('image-info');
+            const audioInfo = document.getElementById('audio-info');
+            const actionButtons = document.querySelectorAll('#final-result .btn');
+updateAudioVisualization(currentAudio, finalAudioViz);
+            // Обновление изображения
+            if (currentImage) {
+                const ctx = finalImageCanvas.getContext('2d');
+                const img = new Image();
+                img.onload = function() {
+                    ctx.clearRect(0, 0, finalImageCanvas.width, finalImageCanvas.height);
+                    ctx.drawImage(img, 0, 0, finalImageCanvas.width, finalImageCanvas.height);
+                };
+                img.src = currentImage;
+                imageInfo.textContent = `Размер: ${currentSize}x${currentSize}, Стиль: Генеративный`;
+            } else {
+                const ctx = finalImageCanvas.getContext('2d');
+                ctx.fillStyle = '#333';
+                ctx.fillRect(0, 0, finalImageCanvas.width, finalImageCanvas.height);
+                ctx.fillStyle = '#666';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Изображение не создано', finalImageCanvas.width/2, finalImageCanvas.height/2);
+                imageInfo.textContent = 'Изображение не создано';
+            }
+
+            // Обновление аудио
+            if (currentAudio) {
+                updateAudioVisualization(currentAudio, finalAudioViz);
+                
+                // Создание аудио URL для плеера
+                const offlineContext = new OfflineAudioContext(2, currentAudio.length, currentAudio.sampleRate);
+                const source = offlineContext.createBufferSource();
+                source.buffer = currentAudio;
+                source.connect(offlineContext.destination);
+                source.start();
+                
+                offlineContext.startRendering().then(renderedBuffer => {
+                    const wav = bufferToWav(renderedBuffer);
+                    const blob = new Blob([wav], { type: 'audio/wav' });
+                    finalAudio.src = URL.createObjectURL(blob);
+                });
+                
+                const duration = currentAudio.duration.toFixed(1);
+                audioInfo.textContent = `Длительность: ${duration}с, Стиль: ${currentStyle}`;
+            } else {
+                const ctx = finalAudioViz.getContext('2d');
+                ctx.fillStyle = '#333';
+                ctx.fillRect(0, 0, finalAudioViz.width, finalAudioViz.height);
+                ctx.fillStyle = '#666';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Аудио не создано', finalAudioViz.width/2, finalAudioViz.height/2);
+                audioInfo.textContent = 'Аудио не создано';
+                finalAudio.src = '';
+            }
+
+            // Активация кнопок если есть контент
+            const hasContent = currentImage || currentAudio;
+            actionButtons.forEach(btn => {
+                btn.disabled = !hasContent;
+            });
+        }
+
+   function updateAudioVisualization(buffer, canvas) {
+     canvas = canvas || document.getElementById('audio-canvas');
+    if (!canvas) {
+        console.error('Canvas element not found!');
+        return;
+    }
+    if (!canvas) {
+        canvas = document.getElementById('audio-canvas');
+    }
+    const ctx = canvas.getContext('2d');
+    const data = buffer.getChannelData(0);
+    const step = Math.ceil(data.length / canvas.width);
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#4ecdc4';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    
+    for (let i = 0; i < canvas.width; i++) {
+        const value = data[i * step] || 0;
+        const y = (value * canvas.height / 2) + (canvas.height / 2);
+        
+        if (i === 0) {
+            ctx.moveTo(i, y);
+        } else {
+            ctx.lineTo(i, y);
+        }
+    }
+    
+    ctx.stroke();
+}
+
+        async function downloadCombined() {
+            if (!currentImage && !currentAudio) return;
+            
+            // Создание ZIP архива (упрощенная версия)
+            const files = [];
+            
+            if (currentImage) {
+                const canvas = document.getElementById('image-canvas');
+                canvas.toBlob(blob => {
+                    files.push({ name: 'musigraph-image.png', blob });
+                    
+                    if (currentAudio) {
+                        const offlineContext = new OfflineAudioContext(2, currentAudio.length, currentAudio.sampleRate);
+                        const source = offlineContext.createBufferSource();
+                        source.buffer = currentAudio;
+                        source.connect(offlineContext.destination);
+                        source.start();
+                        
+                        offlineContext.startRendering().then(renderedBuffer => {
+                            const wav = bufferToWav(renderedBuffer);
+                            const audioBlob = new Blob([wav], { type: 'audio/wav' });
+                            files.push({ name: 'musigraph-audio.wav', blob: audioBlob });
+                            
+                            // Здесь бы был код для создания ZIP, но для упрощения просто скачиваем файлы по отдельности
+                            files.forEach(file => {
+                                const url = URL.createObjectURL(file.blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = file.name;
+                                a.click();
+                                URL.revokeObjectURL(url);
+                            });
+                        });
+                    } else {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'musigraph-image.png';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    }
+                });
+            } else if (currentAudio) {
+                const offlineContext = new OfflineAudioContext(2, currentAudio.length, currentAudio.sampleRate);
+                const source = offlineContext.createBufferSource();
+                source.buffer = currentAudio;
+                source.connect(offlineContext.destination);
+                source.start();
+                
+                offlineContext.startRendering().then(renderedBuffer => {
+                    const wav = bufferToWav(renderedBuffer);
+                    const blob = new Blob([wav], { type: 'audio/wav' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'musigraph-audio.wav';
+                    a.click();
+                    
+                    URL.revokeObjectURL(url);
+                });
+            }
+        }
+
+        function generateShareLink() {
+            // Создание уникальной ссылки для проекта
+            const projectData = {
+                image: currentImage,
+                audio: currentAudio ? 'generated' : null,
+                timestamp: Date.now(),
+                id: Math.random().toString(36).substr(2, 9)
+            };
+            
+            // В реальном приложении это бы сохранялось на сервере
+            const shareUrl = `${window.location.origin}${window.location.pathname}?project=${projectData.id}`;
+            
+            document.getElementById('share-url').value = shareUrl;
+            document.getElementById('share-result').style.display = 'block';
+        }
+
+        function copyShareUrl() {
+            const urlInput = document.getElementById('share-url');
+            urlInput.select();
+            document.execCommand('copy');
+            
+            const btn = document.getElementById('copy-share-url');
+            const originalText = btn.textContent;
+            btn.textContent = 'Скопировано!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        }
+function shareToSocial() {
+            const text = 'Создал уникальное аудио-визуальное произведение с помощью MusiGraph Studio!';
+            const url = window.location.href;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'MusiGraph Studio',
+                    text: text,
+                    url: url
+                });
+            } else {
+                // Fallback для браузеров без Web Share API
+                const shareText = `${text} ${url}`;
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(shareText);
+                    alert('Ссылка скопирована в буфер обмена!');
+                } else {
+                    prompt('Скопируйте ссылку:', shareText);
+                }
+            }
+        }
+
+        function exportProject() {
+            const projectData = {
+                version: '2.0',
+                timestamp: new Date().toISOString(),
+                settings: {
+                    audioText: document.getElementById('audio-text').value,
+                    tempo: document.getElementById('tempo-slider').value,
+                    style: currentStyle,
+                    imageDescription: document.getElementById('image-description').value,
+                    selectedColors: selectedColors,
+                    imageSize: currentSize,
+                    complexity: document.getElementById('complexity-slider').value
+                },
+                hasAudio: !!currentAudio,
+                hasImage: !!currentImage,
+                imageData: currentImage
+            };
+            
+            const jsonString = JSON.stringify(projectData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `musigraph-project-${Date.now()}.json`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+        }
+
+        // === ДОПОЛНИТЕЛЬНЫЕ УТИЛИТЫ ===
+
+        // Функция для создания анимации набора текста
+        function typeWriter(element, text, speed = 50) {
+            let i = 0;
+            element.innerHTML = '';
+            
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            
+            type();
+        }
+
+        // Функция для создания частиц
+        function createParticles(canvas, count = 50) {
+            const ctx = canvas.getContext('2d');
+            const particles = [];
+            
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2,
+                    size: Math.random() * 3 + 1,
+                    color: selectedColors[Math.floor(Math.random() * selectedColors.length)] || '#4ecdc4'
+                });
+            }
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach(particle => {
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    
+                    if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
+                    if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+                    
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    ctx.fillStyle = particle.color + '80';
+                    ctx.fill();
+                });
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+        }
+
+        // Функция для создания звуковых эффектов UI
+        function playUISound(type) {
+            if (!audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            
+            oscillator.connect(gain);
+            gain.connect(audioContext.destination);
+            
+            gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            
+            switch (type) {
+                case 'click':
+                    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+                    break;
+                case 'success':
+                    oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+                    oscillator.frequency.setValueAtTime(900, audioContext.currentTime + 0.1);
+                    break;
+                case 'error':
+                    oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+                    oscillator.frequency.setValueAtTime(200, audioContext.currentTime + 0.1);
+                    break;
+            }
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }
+
+        // Функция для сохранения состояния в localStorage (если доступно)
+        function saveState() {
+            try {
+                const state = {
+                    audioText: document.getElementById('audio-text').value,
+                    tempo: document.getElementById('tempo-slider').value,
+                    style: currentStyle,
+                    imageDescription: document.getElementById('image-description').value,
+                    selectedColors: selectedColors,
+                    imageSize: currentSize,
+                    complexity: document.getElementById('complexity-slider').value
+                };
+                
+                localStorage.setItem('musigraph-state', JSON.stringify(state));
+            } catch (e) {
+                console.log('localStorage недоступен');
+            }
+        }
+
+        // Функция для загрузки состояния из localStorage
+        function loadState() {
+            try {
+                const savedState = localStorage.getItem('musigraph-state');
+                if (savedState) {
+                    const state = JSON.parse(savedState);
+                    
+                    document.getElementById('audio-text').value = state.audioText || '';
+                    document.getElementById('tempo-slider').value = state.tempo || 120;
+                    document.getElementById('tempo-display').textContent = state.tempo || 120;
+                    document.getElementById('tempo-value').textContent = state.tempo || 120;
+                    document.getElementById('image-description').value = state.imageDescription || '';
+                    document.getElementById('complexity-slider').value = state.complexity || 50;
+                    document.getElementById('complexity-display').textContent = (state.complexity || 50) + '%';
+                    document.getElementById('complexity-value').textContent = state.complexity || 50;
+                    
+                    currentStyle = state.style || 'ambient';
+                    currentSize = state.imageSize || 512;
+                    selectedColors = state.selectedColors || [];
+                    
+                    // Обновление UI
+                    document.querySelectorAll('.style-btn').forEach(btn => {
+                        btn.classList.remove('btn-primary');
+                        if (btn.getAttribute('data-style') === currentStyle) {
+                            btn.classList.add('btn-primary');
+                        }
+                    });
+                    
+                    document.querySelectorAll('.size-btn').forEach(btn => {
+                        btn.classList.remove('btn-primary');
+                        if (parseInt(btn.getAttribute('data-size')) === currentSize) {
+                            btn.classList.add('btn-primary');
+                        }
+                    });
+                    
+                    document.querySelectorAll('.color-option').forEach(option => {
+                        const color = option.getAttribute('data-color');
+                        if (selectedColors.includes(color)) {
+                            option.classList.add('selected');
+                        }
+                    });
+                    
+                    document.getElementById('selected-colors-count').textContent = selectedColors.length;
+                }
+            } catch (e) {
+                console.log('Ошибка загрузки состояния:', e);
+            }
+        }
+
+        // Функция для создания уведомлений
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                background: ${type === 'success' ? '#4ecdc4' : type === 'error' ? '#ff6b6b' : '#333'};
+                color: ${type === 'success' || type === 'error' ? '#000' : '#fff'};
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 1000;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                max-width: 300px;
+                font-size: 0.9rem;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Функция для проверки совместимости браузера
+        function checkBrowserCompatibility() {
+            const features = {
+                webAudio: !!(window.AudioContext || window.webkitAudioContext),
+                canvas: !!document.createElement('canvas').getContext,
+                fileAPI: !!(window.File && window.FileReader && window.FileList && window.Blob),
+                webGL: !!document.createElement('canvas').getContext('webgl')
+            };
+            
+            const unsupported = Object.keys(features).filter(key => !features[key]);
+            
+            if (unsupported.length > 0) {
+                showNotification(`Некоторые функции могут не работать: ${unsupported.join(', ')}`, 'error');
+            }
+            
+            return features;
+        }
+
+        // Функция для оптимизации производительности
+        function optimizePerformance() {
+            // Дебаунс для слайдеров
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+            
+            // Применение дебаунса к слайдерам
+            const tempoSlider = document.getElementById('tempo-slider');
+            const complexitySlider = document.getElementById('complexity-slider');
+            
+            const debouncedTempoUpdate = debounce((value) => {
+                document.getElementById('tempo-display').textContent = value;
+                document.getElementById('tempo-value').textContent = value;
+                saveState();
+            }, 100);
+            
+            const debouncedComplexityUpdate = debounce((value) => {
+                document.getElementById('complexity-display').textContent = value + '%';
+                document.getElementById('complexity-value').textContent = value;
+                saveState();
+            }, 100);
+            
+            tempoSlider.addEventListener('input', (e) => debouncedTempoUpdate(e.target.value));
+            complexitySlider.addEventListener('input', (e) => debouncedComplexityUpdate(e.target.value));
+        }
+
+        // Функция для добавления горячих клавиш
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey || e.metaKey) {
+                    switch (e.key) {
+                        case '1':
+                            e.preventDefault();
+                            document.querySelector('[data-tab="audio-creator"]').click();
+                            break;
+                        case '2':
+                            e.preventDefault();
+                            document.querySelector('[data-tab="image-generator"]').click();
+                            break;
+                        case '3':
+                            e.preventDefault();
+                            document.querySelector('[data-tab="final-result"]').click();
+                            break;
+                        case 's':
+                            e.preventDefault();
+                            saveState();
+                            showNotification('Состояние сохранено', 'success');
+                            break;
+                        case 'Enter':
+                            e.preventDefault();
+                            const activeTab = document.querySelector('.tab-btn.active');
+                            if (activeTab) {
+                                const tabName = activeTab.getAttribute('data-tab');
+                                if (tabName === 'audio-creator') {
+                                    document.getElementById('generate-audio').click();
+                                } else if (tabName === 'image-generator') {
+                                    document.getElementById('generate-image').click();
+                                }
+                            }
+                            break;
+                    }
+                }
+                
+                if (e.key === 'Escape') {
+                    stopAudio();
+                }
+            });
+        }
+
+        // Инициализация дополнительных функций
+        document.addEventListener('DOMContentLoaded', function() {
+            // Задержка для основной инициализации
+            setTimeout(() => {
+                checkBrowserCompatibility();
+                loadState();
+                optimizePerformance();
+                setupKeyboardShortcuts();
+                
+                // Добавление звуковых эффектов к кнопкам
+                document.querySelectorAll('.btn').forEach(btn => {
+                    btn.addEventListener('click', () => playUISound('click'));
+                });
+                
+                // Автосохранение при изменении текстовых полей
+                document.getElementById('audio-text').addEventListener('input', debounce(saveState, 500));
+                document.getElementById('image-description').addEventListener('input', debounce(saveState, 500));
+                
+                console.log('MusiGraph Studio v2.0 полностью инициализирован');
+                showNotification('MusiGraph Studio готов к работе!', 'success');
+            }, 100);
+        });
+
+        // Обработка ошибок
+        window.addEventListener('error', (e) => {
+            console.error('Глобальная ошибка:', e.error);
+            showNotification('Произошла ошибка. Проверьте консоль для деталей.', 'error');
+        });
+
+        // Обработка предупреждения о закрытии страницы
+        window.addEventListener('beforeunload', (e) => {
+            if (currentAudio || currentImage) {
+                e.preventDefault();
+                e.returnValue = 'У вас есть несохранённая работа. Вы уверены, что хотите покинуть страницу?';
+                return e.returnValue;
+            }
+        });
+
+        // Экспорт функций для глобального доступа (если нужно)
+        window.MusiGraph = {
+            playUISound,
+            showNotification,
+            saveState,
+            loadState,
+            exportProject,
+            generateShareLink
+        };
+
+        // Функция debounce для использования в других местах
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+          </script>
+</body>
+</html>

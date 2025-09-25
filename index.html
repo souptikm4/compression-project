@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Музыкально-графическая студия</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header и навигация */
+        header {
+            background: #111;
+            border-bottom: 1px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .tab-btn:hover,
+        .tab-btn.active {
+            background: #fff;
+            color: #000;
+        }
+
+        /* Основной контент */
+        main {
+            padding: 2rem 0;
+            min-height: calc(100vh - 100px);
+        }
+
+        .module {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .module.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .module-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .module-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .module-subtitle {
+            color: #888;
+            font-size: 1rem;
+        }
+
+        /* Карточки */
+        .card {
+            background: #111;
+            border: 1px solid #333;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 4px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Формы */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: #000;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #fff;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            background: #444;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+        }
+
+        .slider-value {
+            min-width: 60px;
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+        }
+
+        /* Кнопки */
+        .btn {
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            margin-right: 1rem;
+            margin-bottom: 1rem;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: #000;
+            color: #fff;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        /* Canvas и визуализация */
+        .canvas-container {
+            background: #222;
+            border: 1px solid #444;
+            padding: 1rem;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        canvas {
+            border: 1px solid #666;
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Теория блоки */
+        .theory-block {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .theory-block.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; max-height: 0; }
+            to { opacity: 1; max-height: 500px; }
+        }
+
+        .theory-title {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .theory-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .code-table {
+            font-family: 'Arial', sans-serif;
+            font-size: 0.8rem;
+            margin: 1rem 0;
+        }
+
+        .code-table td {
+            padding: 0.25rem 0.5rem;
+            border: 1px solid #444;
+        }
+
+        /* Формула */
+        .formula-display {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            padding: 1rem;
+            font-family: 'Arial', sans-serif;
+            font-size: 0.8rem;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        /* Прогресс индикатор */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #444;
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .tab-btn {
+                font-size: 0.7rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .module-title {
+                font-size: 1.5rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                margin-right: 0;
+            }
+        }
+
+        /* Цветовые селекторы */
+        .color-selector {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #444;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .color-option.selected {
+            border-color: #fff;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">MusiGraph Studio</div>
+                <nav class="nav-tabs">
+                    <button class="tab-btn active" data-tab="huffman-synth">Huffman-Synth</button>
+                    <button class="tab-btn" data-tab="rle-drum">RLE-Drum</button>
+                    <button class="tab-btn" data-tab="avatar-gen">Avatar-Gen</button>
+                    <button class="tab-btn" data-tab="formula">Формула</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Модуль 1: Huffman-Synth -->
+            <div id="huffman-synth" class="module active">
+                <div class="module-header">
+                    <h1 class="module-title">Huffman-Synth</h1>
+                    <p class="module-subtitle">Генерация мелодий на основе алгоритма Хаффмана</p>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Создание мелодии</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="huffman-text">Введите текст (макс. 100 символов)</label>
+                        <input type="text" id="huffman-text" class="form-input" maxlength="100" 
+                               placeholder="Введите вашу фразу...">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Базовая длительность: <span id="duration-value">1.0</span> сек</label>
+                        <div class="slider-container">
+                            <input type="range" id="base-duration" class="slider" 
+                                   min="0.2" max="2.0" step="0.1" value="1.0">
+                            <span class="slider-value" id="duration-display">1.0s</span>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button id="generate-melody" class="btn btn-primary">Сгенерировать мелодию</button>
+                        <button id="play-melody" class="btn" disabled>Play</button>
+                        <button id="pause-melody" class="btn" disabled>Pause</button>
+                        <button id="download-midi" class="btn" disabled>Скачать MIDI</button>
+                        <button id="show-huffman-theory" class="btn">Теория</button>
+                        <button id="add-melody-to-formula" class="btn" disabled>Добавить в формулу</button>
+                    </div>
+
+                    <div id="huffman-theory" class="theory-block">
+                        <h3 class="theory-title">Алгоритм Хаффмана</h3>
+                        <div class="theory-content">
+                            <p>1. Подсчитываем частоты символов в тексте</p>
+                            <p>2. Строим дерево Хаффмана (0 = влево, 1 = вправо)</p>
+                            <p>3. Генерируем коды для каждого символа</p>
+                            <p>4. Преобразуем биты в ноты: 0 = низкие ноты, 1 = высокие ноты</p>
+                            <div id="huffman-codes" class="code-table"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Модуль 2: RLE-Drum -->
+            <div id="rle-drum" class="module">
+                <div class="module-header">
+                    <h1 class="module-title">RLE-Drum</h1>
+                    <p class="module-subtitle">Создание ритмов на основе RLE-алгоритма</p>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Запись и обработка аудио</h2>
+                    
+                    <div class="btn-group">
+                        <button id="record-sample" class="btn btn-primary">Записать сэмпл</button>
+                        <button id="stop-recording" class="btn" disabled>Остановить запись</button>
+                        <input type="file" id="upload-audio" accept=".wav,.mp3" style="display: none;">
+                        <button id="upload-btn" class="btn">Загрузить файл</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Порог громкости: <span id="threshold-value">0.5</span></label>
+                        <div class="slider-container">
+                            <input type="range" id="volume-threshold" class="slider" 
+                                   min="0.0" max="1.0" step="0.1" value="0.5">
+                            <span class="slider-value" id="threshold-display">0.5</span>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button id="generate-beat" class="btn btn-primary" disabled>Сгенерировать бит</button>
+                        <button id="play-drum" class="btn" disabled>Play Drum</button>
+                        <button id="pause-drum" class="btn" disabled>Pause</button>
+                        <button id="download-drum-midi" class="btn" disabled>Скачать MIDI</button>
+                        <button id="show-rle-theory" class="btn">Теория</button>
+                        <button id="add-drum-to-formula" class="btn" disabled>Добавить в формулу</button>
+                    </div>
+
+                    <div class="canvas-container">
+                        <canvas id="rle-canvas" width="800" height="200"></canvas>
+                        <p>Визуализация RLE-блоков</p>
+                    </div>
+
+                    <div id="rle-theory" class="theory-block">
+                        <h3 class="theory-title">Алгоритм RLE (Run-Length Encoding)</h3>
+                        <div class="theory-content">
+                            <p>1. Преобразуем аудио в PCM-данные</p>
+                            <p>2. Бинаризация по порогу громкости (0/1)</p>
+                            <p>3. Применяем RLE: группируем одинаковые значения</p>
+                            <p>4. Создаем ритм: 1 = удар, 0 = пауза</p>
+                            <div id="rle-data" class="code-table"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Модуль 3: Avatar-Gen -->
+            <div id="avatar-gen" class="module">
+                <div class="module-header">
+                    <h1 class="module-title">Avatar Generator</h1>
+                    <p class="module-subtitle">Генерация графических аватаров</p>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Создание аватара</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="seed-text">Seed-текст</label>
+                        <input type="text" id="seed-text" class="form-input" 
+                               placeholder="Введите текст для генерации...">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Метод генерации</label>
+                        <div class="btn-group">
+                            <button id="method-rle" class="btn btn-primary method-btn" data-method="rle">RLE-Avatar</button>
+                            <button id="method-huffman" class="btn method-btn" data-method="huffman">Huffman-Avatar</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="color-selection">
+                        <label class="form-label">Цветовая палитра</label>
+                        <div class="color-selector" id="palette">
+                            <div class="color-option selected" style="background: #000000" data-color="#000000"></div>
+                            <div class="color-option" style="background: #ffffff" data-color="#ffffff"></div>
+                            <div class="color-option" style="background: #888888" data-color="#888888"></div>
+                            <div class="color-option" style="background: #444444" data-color="#444444"></div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button id="generate-avatar" class="btn btn-primary">Сгенерировать аватар</button>
+                        <button id="download-png" class="btn" disabled>Скачать PNG</button>
+                        <button id="download-svg" class="btn" disabled>Скачать SVG</button>
+                        <button id="show-avatar-theory" class="btn">Теория</button>
+                        <button id="add-avatar-to-formula" class="btn" disabled>Добавить в формулу</button>
+                    </div>
+
+                    <div class="canvas-container">
+                        <canvas id="avatar-canvas" width="256" height="256"></canvas>
+                        <p>Сгенерированный аватар</p>
+                    </div>
+
+                    <div id="avatar-theory" class="theory-block">
+                        <h3 class="theory-title">Алгоритмы генерации аватаров</h3>
+                        <div class="theory-content">
+                            <p><strong>RLE-Avatar:</strong></p>
+                            <p>1. Применяем RLE к символам seed-текста</p>
+                            <p>2. Рисуем строки из count квадратов цвета val</p>
+                            <p><strong>Huffman-Avatar:</strong></p>
+                            <p>1. Строим Huffman-код для seed-текста</p>
+                            <p>2. Группируем биты по 3 → индекс палитры</p>
+                            <p>3. Рисуем пиксели по индексам</p>
+                            <div id="avatar-process" class="code-table"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Модуль 4: Формула -->
+            <div id="formula" class="module">
+                <div class="module-header">
+                    <h1 class="module-title">Моя формула</h1>
+                    <p class="module-subtitle">Объединение всех результатов</p>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Текущая формула</h2>
+                    
+                    <div class="formula-display" id="formula-display">
+{
+  "version": "1.0",
+  "components": []
+}
+                    </div>
+
+                    <div class="btn-group">
+                        <button id="download-json" class="btn">Скачать JSON</button>
+                        <button id="copy-link" class="btn">Скопировать ссылку</button>
+                        <button id="clear-formula" class="btn">Очистить формулу</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="load-link">Загрузить из ссылки</label>
+                        <input type="text" id="load-link" class="form-input" 
+                               placeholder="Вставьте ссылку для загрузки формулы...">
+                        <button id="load-formula" class="btn" style="margin-top: 0.5rem;">Загрузить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Глобальные переменные
+        let audioContext;
+        let currentMelody = null;
+        let currentDrum = null;
+        let currentAvatar = null;
+        let formula = { version: "1.0", components: [] };
+        let isRecording = false;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            // Инициализация аудио контекста
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Обработчики вкладок
+            setupTabNavigation();
+            
+            // Обработчики Huffman-Synth
+            setupHuffmanSynth();
+            
+            // Обработчики RLE-Drum
+            setupRLEDrum();
+            
+            // Обработчики Avatar-Gen
+            setupAvatarGen();
+            
+            // Обработчики формулы
+            setupFormula();
+            
+            // Загрузка из URL при загрузке страницы
+            loadFromURL();
+        }
+
+        // === НАВИГАЦИЯ ПО ВКЛАДКАМ ===
+        function setupTabNavigation() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const modules = document.querySelectorAll('.module');
+
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetTab = btn.getAttribute('data-tab');
+                    
+                    // Переключение активной вкладки
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // Переключение модулей
+                    modules.forEach(m => m.classList.remove('active'));
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
+        }
+
+        // === HUFFMAN-SYNTH ===
+        function setupHuffmanSynth() {
+            const textInput = document.getElementById('huffman-text');
+            const durationSlider = document.getElementById('base-duration');
+            const durationDisplay = document.getElementById('duration-display');
+            const generateBtn = document.getElementById('generate-melody');
+            const playBtn = document.getElementById('play-melody');
+            const pauseBtn = document.getElementById('pause-melody');
+            const theoryBtn = document.getElementById('show-huffman-theory');
+            const addToFormulaBtn = document.getElementById('add-melody-to-formula');
+
+            // Обновление слайдера
+            durationSlider.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                durationDisplay.textContent = value.toFixed(1) + 's';
+                document.getElementById('duration-value').textContent = value.toFixed(1);
+            });
+
+            // Генерация мелодии
+            generateBtn.addEventListener('click', () => {
+                const text = textInput.value.trim();
+                if (!text) {
+                    alert('Введите текст для генерации мелодии');
+                    return;
+                }
+                generateHuffmanMelody(text, parseFloat(durationSlider.value));
+            });
+
+            // Воспроизведение
+            playBtn.addEventListener('click', () => playMelody());
+            pauseBtn.addEventListener('click', () => pauseMelody());
+
+            // Теория
+            theoryBtn.addEventListener('click', () => {
+                const theoryBlock = document.getElementById('huffman-theory');
+                theoryBlock.classList.toggle('show');
+            });
+
+            // Добавление в формулу
+            addToFormulaBtn.addEventListener('click', () => {
+                if (currentMelody) {
+                    addToFormula('huffman-synth', currentMelody);
+                }
+            });
+        }
+
+        function generateHuffmanMelody(text, baseDuration) {
+            // Подсчет частот
+            const frequencies = {};
+            for (let char of text) {
+                frequencies[char] = (frequencies[char] || 0) + 1;
+            }
+
+            // Построение дерева Хаффмана
+            const huffmanTree = buildHuffmanTree(frequencies);
+            const codes = generateHuffmanCodes(huffmanTree);
+
+            // Отображение кодов в теории
+            displayHuffmanCodes(codes);
+
+            // Генерация нот
+            const notes = [];
+            for (let char of text) {
+                const code = codes[char];
+                if (code) {
+                    for (let bit of code) {
+                        const frequency = bit === '0' ? 261.63 : 523.25; // C4 vs C5
+                        const duration = baseDuration / code.length;
+                        notes.push({ frequency, duration });
+                    }
+                }
+            }
+
+            currentMelody = {
+                text: text,
+                baseDuration: baseDuration,
+                codes: codes,
+                notes: notes,
+                timestamp: Date.now()
+            };
+
+            // Активация кнопок
+            document.getElementById('play-melody').disabled = false;
+            document.getElementById('pause-melody').disabled = false;
+            document.getElementById('download-midi').disabled = false;
+            document.getElementById('add-melody-to-formula').disabled = false;
+
+            console.log('Мелодия сгенерирована:', currentMelody);
+        }
+
+        function buildHuffmanTree(frequencies) {
+            // Упрощенная реализация дерева Хаффмана
+            const nodes = Object.entries(frequencies).map(([char, freq]) => ({
+                char, freq, left: null, right: null
+            }));
+
+            while (nodes.length > 1) {
+                nodes.sort((a, b) => a.freq - b.freq);
+                const left = nodes.shift();
+                const right = nodes.shift();
+                nodes.push({
+                    char: null,
+                    freq: left.freq + right.freq,
+                    left,
+                    right
+                });
+            }
+
+            return nodes[0];
+        }
+
+        function generateHuffmanCodes(root) {
+            const codes = {};
+            
+            function traverse(node, code = '') {
+                if (node.char !== null) {
+                    codes[node.char] = code || '0'; // Для одного символа
+                } else {
+                    if (node.left) traverse(node.left, code + '0');
+                    if (node.right) traverse(node.right, code + '1');
+                }
+            }
+            
+            traverse(root);
+            return codes;
+        }
+
+        function displayHuffmanCodes(codes) {
+            const codesContainer = document.getElementById('huffman-codes');
+            let html = '<table><tr><th>Символ</th><th>Код</th><th>Частота</th></tr>';
+            
+            for (let [char, code] of Object.entries(codes)) {
+                html += `<tr><td>'${char}'</td><td>${code}</td><td>${code.length} бит</td></tr>`;
+            }
+            
+            html += '</table>';
+            codesContainer.innerHTML = html;
+        }
+
+        function playMelody() {
+            if (!currentMelody) return;
+
+            let currentTime = audioContext.currentTime;
+            
+            currentMelody.notes.forEach(note => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(note.frequency, currentTime);
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0, currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.3, currentTime + 0.01);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + note.duration);
+                
+                oscillator.start(currentTime);
+                oscillator.stop(currentTime + note.duration);
+                
+                currentTime += note.duration;
+            });
+            }
+
+        function pauseMelody() {
+            // Простая реализация паузы - остановка всех активных oscillators
+            audioContext.suspend();
+            setTimeout(() => audioContext.resume(), 100);
+        }
+
+        // === RLE-DRUM ===
+        function setupRLEDrum() {
+            const recordBtn = document.getElementById('record-sample');
+            const stopBtn = document.getElementById('stop-recording');
+            const uploadBtn = document.getElementById('upload-btn');
+            const uploadInput = document.getElementById('upload-audio');
+            const thresholdSlider = document.getElementById('volume-threshold');
+            const thresholdDisplay = document.getElementById('threshold-display');
+            const generateBeatBtn = document.getElementById('generate-beat');
+            const playDrumBtn = document.getElementById('play-drum');
+            const pauseDrumBtn = document.getElementById('pause-drum');
+            const theoryBtn = document.getElementById('show-rle-theory');
+            const addToFormulaBtn = document.getElementById('add-drum-to-formula');
+
+            // Обновление слайдера порога
+            thresholdSlider.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                thresholdDisplay.textContent = value.toFixed(1);
+                document.getElementById('threshold-value').textContent = value.toFixed(1);
+            });
+
+            // Запись аудио
+            recordBtn.addEventListener('click', () => startRecording());
+            stopBtn.addEventListener('click', () => stopRecording());
+
+            // Загрузка файла
+            uploadBtn.addEventListener('click', () => uploadInput.click());
+            uploadInput.addEventListener('change', (e) => {
+                if (e.target.files[0]) {
+                    processAudioFile(e.target.files[0]);
+                }
+            });
+
+            // Генерация бита
+            generateBeatBtn.addEventListener('click', () => generateRLEBeat());
+
+            // Воспроизведение
+            playDrumBtn.addEventListener('click', () => playDrumBeat());
+            pauseDrumBtn.addEventListener('click', () => pauseDrumBeat());
+
+            // Теория
+            theoryBtn.addEventListener('click', () => {
+                const theoryBlock = document.getElementById('rle-theory');
+                theoryBlock.classList.toggle('show');
+            });
+
+            // Добавление в формулу
+            addToFormulaBtn.addEventListener('click', () => {
+                if (currentDrum) {
+                    addToFormula('rle-drum', currentDrum);
+                }
+            });
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                recordedChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'audio/wav' });
+                    processAudioBlob(blob);
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+
+                document.getElementById('record-sample').disabled = true;
+                document.getElementById('stop-recording').disabled = false;
+
+            } catch (error) {
+                console.error('Ошибка доступа к микрофону:', error);
+                alert('Не удалось получить доступ к микрофону');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                isRecording = false;
+
+                document.getElementById('record-sample').disabled = false;
+                document.getElementById('stop-recording').disabled = true;
+            }
+        }
+
+        async function processAudioFile(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+            processAudioBuffer(audioBuffer);
+        }
+
+        async function processAudioBlob(blob) {
+            const arrayBuffer = await blob.arrayBuffer();
+            const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+            processAudioBuffer(audioBuffer);
+        }
+
+        function processAudioBuffer(audioBuffer) {
+            const channelData = audioBuffer.getChannelData(0);
+            const threshold = parseFloat(document.getElementById('volume-threshold').value);
+            
+            // Бинаризация по порогу
+            const binaryData = [];
+            for (let i = 0; i < channelData.length; i += 1024) { // Downsample
+                const chunk = channelData.slice(i, i + 1024);
+                const rms = Math.sqrt(chunk.reduce((sum, val) => sum + val * val, 0) / chunk.length);
+                binaryData.push(rms > threshold ? 1 : 0);
+            }
+
+            // Применение RLE
+            const rleData = applyRLE(binaryData);
+            
+            // Визуализация
+            visualizeRLE(rleData);
+            
+            // Сохранение данных
+            window.currentAudioData = {
+                binaryData,
+                rleData,
+                threshold,
+                sampleRate: audioBuffer.sampleRate,
+                timestamp: Date.now()
+            };
+
+            document.getElementById('generate-beat').disabled = false;
+        }
+
+        function applyRLE(data) {
+            const rle = [];
+            let count = 1;
+            let currentValue = data[0];
+
+            for (let i = 1; i < data.length; i++) {
+                if (data[i] === currentValue) {
+                    count++;
+                } else {
+                    rle.push({ value: currentValue, count });
+                    currentValue = data[i];
+                    count = 1;
+                }
+            }
+            rle.push({ value: currentValue, count });
+
+            return rle;
+        }
+
+        function visualizeRLE(rleData) {
+            const canvas = document.getElementById('rle-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            let x = 0;
+            const blockHeight = canvas.height / 2;
+            const maxCount = Math.max(...rleData.map(item => item.count));
+            
+            rleData.forEach(item => {
+                const width = Math.max(1, (item.count / maxCount) * 20);
+                const color = item.value === 1 ? '#ffffff' : '#444444';
+                
+                ctx.fillStyle = color;
+                ctx.fillRect(x, canvas.height / 2 - blockHeight / 2, width, blockHeight);
+                
+                // Подпись
+                ctx.fillStyle = '#888888';
+                ctx.font = '10px Courier New';
+                ctx.fillText(`${item.value}:${item.count}`, x, canvas.height - 10);
+                
+                x += width + 2;
+                
+                if (x > canvas.width - 20) return;
+            });
+
+            // Отображение RLE данных в теории
+            displayRLEData(rleData);
+        }
+
+        function displayRLEData(rleData) {
+            const rleContainer = document.getElementById('rle-data');
+            let html = '<table><tr><th>Значение</th><th>Количество</th><th>Тип</th></tr>';
+            
+            rleData.forEach(item => {
+                const type = item.value === 1 ? 'Удар' : 'Пауза';
+                html += `<tr><td>${item.value}</td><td>${item.count}</td><td>${type}</td></tr>`;
+            });
+            
+            html += '</table>';
+            rleContainer.innerHTML = html;
+        }
+
+        function generateRLEBeat() {
+            if (!window.currentAudioData) return;
+
+            const { rleData } = window.currentAudioData;
+            const beats = [];
+            let time = 0;
+            const beatDuration = 0.125; // 125ms per beat
+
+            rleData.forEach(item => {
+                const duration = item.count * beatDuration;
+                if (item.value === 1) {
+                    beats.push({
+                        time: time,
+                        duration: duration,
+                        velocity: 0.8
+                    });
+                }
+                time += duration;
+            });
+
+            currentDrum = {
+                beats: beats,
+                rleData: rleData,
+                totalDuration: time,
+                timestamp: Date.now()
+            };
+
+            // Активация кнопок
+            document.getElementById('play-drum').disabled = false;
+            document.getElementById('pause-drum').disabled = false;
+            document.getElementById('download-drum-midi').disabled = false;
+            document.getElementById('add-drum-to-formula').disabled = false;
+
+            console.log('Ритм сгенерирован:', currentDrum);
+        }
+
+        function playDrumBeat() {
+            if (!currentDrum) return;
+
+            currentDrum.beats.forEach(beat => {
+                setTimeout(() => {
+                    playDrumSound(beat.velocity);
+                }, beat.time * 1000);
+            });
+        }
+
+        function playDrumSound(velocity = 0.8) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            const filter = audioContext.createBiquadFilter();
+
+            oscillator.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            // Настройки для drum sound
+            oscillator.frequency.setValueAtTime(60, audioContext.currentTime);
+            oscillator.type = 'triangle';
+            
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(200, audioContext.currentTime);
+            
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(velocity, audioContext.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        function pauseDrumBeat() {
+            // Простая реализация паузы
+            audioContext.suspend();
+            setTimeout(() => audioContext.resume(), 100);
+        }
+
+        // === AVATAR GENERATOR ===
+        function setupAvatarGen() {
+            const seedInput = document.getElementById('seed-text');
+            const methodBtns = document.querySelectorAll('.method-btn');
+            const colorOptions = document.querySelectorAll('.color-option');
+            const generateBtn = document.getElementById('generate-avatar');
+            const theoryBtn = document.getElementById('show-avatar-theory');
+            const addToFormulaBtn = document.getElementById('add-avatar-to-formula');
+
+            let selectedMethod = 'rle';
+            let selectedColors = ['#000000'];
+
+            // Выбор метода
+            methodBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    methodBtns.forEach(b => b.classList.remove('btn-primary'));
+                    btn.classList.add('btn-primary');
+                    selectedMethod = btn.getAttribute('data-method');
+                });
+            });
+
+            // Выбор цветов
+            colorOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    option.classList.toggle('selected');
+                    const color = option.getAttribute('data-color');
+                    
+                    if (option.classList.contains('selected')) {
+                        if (!selectedColors.includes(color)) {
+                            selectedColors.push(color);
+                        }
+                    } else {
+                        selectedColors = selectedColors.filter(c => c !== color);
+                    }
+                    
+                    if (selectedColors.length === 0) {
+                        selectedColors = ['#000000'];
+                        document.querySelector('[data-color="#000000"]').classList.add('selected');
+                    }
+                });
+            });
+
+            // Генерация аватара
+            generateBtn.addEventListener('click', () => {
+                const seedText = seedInput.value.trim();
+                if (!seedText) {
+                    alert('Введите seed-текст для генерации аватара');
+                    return;
+                }
+                generateAvatar(seedText, selectedMethod, selectedColors);
+            });
+
+            // Теория
+            theoryBtn.addEventListener('click', () => {
+                const theoryBlock = document.getElementById('avatar-theory');
+                theoryBlock.classList.toggle('show');
+            });
+
+            // Добавление в формулу
+            addToFormulaBtn.addEventListener('click', () => {
+                if (currentAvatar) {
+                    addToFormula('avatar-gen', currentAvatar);
+                }
+            });
+        }
+
+        function generateAvatar(seedText, method, colors) {
+            const canvas = document.getElementById('avatar-canvas');
+            const ctx = canvas.getContext('2d');
+            const size = 256;
+            
+            ctx.clearRect(0, 0, size, size);
+            
+            let avatarData;
+            
+            if (method === 'rle') {
+                avatarData = generateRLEAvatar(seedText, colors, ctx, size);
+            } else {
+                avatarData = generateHuffmanAvatar(seedText, colors, ctx, size);
+            }
+
+            currentAvatar = {
+                seedText: seedText,
+                method: method,
+                colors: colors,
+                data: avatarData,
+                timestamp: Date.now()
+            };
+
+            // Активация кнопок
+            document.getElementById('download-png').disabled = false;
+            document.getElementById('download-svg').disabled = false;
+            document.getElementById('add-avatar-to-formula').disabled = false;
+
+            // Отображение процесса в теории
+            displayAvatarProcess(currentAvatar);
+
+            console.log('Аватар сгенерирован:', currentAvatar);
+        }
+
+        function generateRLEAvatar(seedText, colors, ctx, size) {
+            // Применяем RLE к тексту
+            const charCodes = seedText.split('').map(c => c.charCodeAt(0));
+            const rleData = applyRLE(charCodes.map(code => code % 2)); // Бинаризация
+            
+            const pixelSize = Math.floor(size / Math.sqrt(rleData.length * 10));
+            let x = 0, y = 0;
+            
+            rleData.forEach(item => {
+                const colorIndex = item.value % colors.length;
+                const color = colors[colorIndex];
+                
+                ctx.fillStyle = color;
+                
+                for (let i = 0; i < item.count && y < size; i++) {
+                    ctx.fillRect(x, y, pixelSize, pixelSize);
+                    
+                    x += pixelSize;
+                    if (x >= size) {
+                        x = 0;
+                        y += pixelSize;
+                    }
+                }
+            });
+
+            return { rleData, pixelSize };
+        }
+
+        function generateHuffmanAvatar(seedText, colors, ctx, size) {
+            // Генерируем коды Хаффмана
+            const frequencies = {};
+            for (let char of seedText) {
+                frequencies[char] = (frequencies[char] || 0) + 1;
+            }
+            
+            const huffmanTree = buildHuffmanTree(frequencies);
+            const codes = generateHuffmanCodes(huffmanTree);
+            
+            // Получаем битовую строку
+            let bitString = '';
+            for (let char of seedText) {
+                bitString += codes[char] || '0';
+            }
+            
+            // Группируем биты по 3 для индекса цвета
+            const pixelSize = Math.floor(size / Math.sqrt(bitString.length / 3));
+            let x = 0, y = 0;
+            
+            for (let i = 0; i < bitString.length - 2; i += 3) {
+                const bits = bitString.substr(i, 3);
+                const colorIndex = parseInt(bits, 2) % colors.length;
+                const color = colors[colorIndex];
+                
+                ctx.fillStyle = color;
+                ctx.fillRect(x, y, pixelSize, pixelSize);
+                
+                x += pixelSize;
+                if (x >= size) {
+                    x = 0;
+                    y += pixelSize;
+                }
+                
+                if (y >= size) break;
+            }
+
+            return { codes, bitString, pixelSize };
+        }
+
+        function displayAvatarProcess(avatar) {
+            const processContainer = document.getElementById('avatar-process');
+            let html = '<table><tr><th>Этап</th><th>Данные</th></tr>';
+            
+            html += `<tr><td>Seed</td><td>${avatar.seedText}</td></tr>`;
+            html += `<tr><td>Метод</td><td>${avatar.method}</td></tr>`;
+            html += `<tr><td>Цвета</td><td>${avatar.colors.join(', ')}</td></tr>`;
+            
+            if (avatar.method === 'rle' && avatar.data.rleData) {
+                html += `<tr><td>RLE блоки</td><td>${avatar.data.rleData.length}</td></tr>`;
+            } else if (avatar.method === 'huffman' && avatar.data.bitString) {
+                html += `<tr><td>Биты</td><td>${avatar.data.bitString.length}</td></tr>`;
+            }
+            
+            html += '</table>';
+            processContainer.innerHTML = html;
+        }
+
+        // === ФОРМУЛА ===
+        function setupFormula() {
+            const downloadBtn = document.getElementById('download-json');
+            const copyLinkBtn = document.getElementById('copy-link');
+            const clearBtn = document.getElementById('clear-formula');
+            const loadBtn = document.getElementById('load-formula');
+            const loadInput = document.getElementById('load-link');
+
+            downloadBtn.addEventListener('click', () => downloadFormula());
+            copyLinkBtn.addEventListener('click', () => copyFormulaLink());
+            clearBtn.addEventListener('click', () => clearFormula());
+            loadBtn.addEventListener('click', () => loadFormula(loadInput.value));
+        }
+
+        function addToFormula(type, data) {
+            const component = {
+                type: type,
+                data: data,
+                timestamp: Date.now()
+            };
+
+            formula.components.push(component);
+            updateFormulaDisplay();
+            
+            console.log('Добавлено в формулу:', component);
+        }
+
+        function updateFormulaDisplay() {
+            const display = document.getElementById('formula-display');
+            display.textContent = JSON.stringify(formula, null, 2);
+        }
+
+        function downloadFormula() {
+            const blob = new Blob([JSON.stringify(formula, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `musigraph-formula-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function copyFormulaLink() {
+            const compressed = btoa(JSON.stringify(formula));
+            const link = `${window.location.origin}${window.location.pathname}?formula=${compressed}`;
+            
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Ссылка скопирована в буфер обмена');
+            }).catch(() => {
+                prompt('Скопируйте ссылку:', link);
+            });
+        }
+
+        function clearFormula() {
+            if (confirm('Очистить текущую формулу?')) {
+                formula = { version: "1.0", components: [] };
+                updateFormulaDisplay();
+            }
+        }
+
+        function loadFormula(input) {
+            try {
+                let data;
+                
+                if (input.startsWith('http')) {
+                    // Извлекаем параметр из URL
+                    const url = new URL(input);
+                    const compressed = url.searchParams.get('formula');
+                    if (compressed) {
+                        data = JSON.parse(atob(compressed));
+                    } else {
+                        throw new Error('Формула не найдена в URL');
+                    }
+                } else {
+                    // Прямой JSON
+                    data = JSON.parse(input);
+                }
+                
+                if (data.version && data.components) {
+                    formula = data;
+                    updateFormulaDisplay();
+                    alert('Формула загружена успешно');
+                } else {
+                    throw new Error('Неверный формат формулы');
+                }
+                
+            } catch (error) {
+                alert('Ошибка загрузки формулы: ' + error.message);
+            }
+        }
+
+        function loadFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const compressed = urlParams.get('formula');
+            
+            if (compressed) {
+                try {
+                    const data = JSON.parse(atob(compressed));
+                    formula = data;
+                    updateFormulaDisplay();
+                } catch (error) {
+                    console.error('Ошибка загрузки формулы из URL:', error);
+                }
+            }
+        }
+
+        // === ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ===
+
+        // Download handlers
+        document.getElementById('download-midi').addEventListener('click', () => {
+            if (currentMelody) {
+                downloadMIDI(currentMelody.notes, 'huffman-melody');
+            }
+        });
+
+        document.getElementById('download-drum-midi').addEventListener('click', () => {
+            if (currentDrum) {
+                downloadDrumMIDI(currentDrum.beats, 'rle-drum');
+            }
+        });
+
+        document.getElementById('download-png').addEventListener('click', () => {
+            if (currentAvatar) {
+                downloadCanvasAsPNG('avatar-canvas', 'avatar');
+            }
+        });
+
+        document.getElementById('download-svg').addEventListener('click', () => {
+            if (currentAvatar) {
+                downloadAvatarAsSVG(currentAvatar, 'avatar');
+            }
+        });
+
+        function downloadMIDI(notes, filename) {
+            // Упрощенная генерация MIDI (псевдо-код)
+            console.log('Генерация MIDI файла:', filename, notes);
+            alert('MIDI генерация - функция в разработке');
+        }
+
+        function downloadDrumMIDI(beats, filename) {
+            console.log('Генерация Drum MIDI файла:', filename, beats);
+            alert('Drum MIDI генерация - функция в разработке');
+        }
+
+        function downloadCanvasAsPNG(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = `${filename}-${Date.now()}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        function downloadAvatarAsSVG(avatar, filename) {
+            // Генерация SVG на основе данных аватара
+            const size = 256;
+            let svg = `<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">`;
+            
+            // Простая реализация - добавим прямоугольники
+            svg += `<rect width="${size}" height="${size}" fill="${avatar.colors[0]}"/>`;
+            
+            svg += '</svg>';
+            
+            const blob = new Blob([svg], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${filename}-${Date.now()}.svg`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Инициализация при загрузке
+        console.log('MusiGraph Studio загружен');
+    </script>
+</body>
+</html>
+            
